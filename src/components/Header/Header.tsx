@@ -6,20 +6,23 @@ import {
   Tabs,
   Tab,
   Button,
-  Avatar,
+  Box,
   Menu,
   MenuItem,
-  Box,
-  IconButton
+  Avatar,
+  ListItemIcon,
+  ListItemText
 } from '@mui/material';
 import {
-  AccountCircle,
   ExitToApp,
   Chat,
   Home,
   Book,
   Factory,
-  PersonAdd
+  PersonAdd,
+  AccountCircle,
+  Person as PersonIcon,
+  ArrowDropDown
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -34,8 +37,10 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ isAuthenticated, user, onLogin, onLogout, onRegister }) => {
   const navigate = useNavigate(); // Hook để điều hướng
   const location = useLocation(); // Hook để lấy đường dẫn hiện tại
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null); // State cho menu dropdown
-
+  
+  // State cho user menu dropdown
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
   // Xác định tab hiện tại dựa trên đường dẫn
   const getCurrentTab = () => {
     const path = location.pathname;
@@ -43,7 +48,9 @@ const Header: React.FC<HeaderProps> = ({ isAuthenticated, user, onLogin, onLogou
     if (path === '/theory') return 1;
     if (path === '/production') return 2;
     if (path === '/chat') return 3;
-    return 0;
+    // Nếu đang ở trang profile hoặc trang khác, không highlight tab nào
+    if (path === '/profile') return false;
+    return 0; // Default về trang chủ
   };
 
   // Xử lý thay đổi tab
@@ -52,26 +59,26 @@ const Header: React.FC<HeaderProps> = ({ isAuthenticated, user, onLogin, onLogou
     navigate(routes[newValue]);
   };
 
-  // Xử lý mở menu user
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+  // Xử lý logout
+  const handleLogout = () => {
+    setAnchorEl(null); // Đóng menu trước khi logout
+    onLogout();
+  };
+
+  // Xử lý mở user menu
+  const handleUserMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  // Xử lý đóng menu
-  const handleMenuClose = () => {
+  // Xử lý đóng user menu
+  const handleUserMenuClose = () => {
     setAnchorEl(null);
   };
 
   // Xử lý chuyển đến trang profile
-  const handleProfile = () => {
+  const handleProfileClick = () => {
+    setAnchorEl(null);
     navigate('/profile');
-    handleMenuClose();
-  };
-
-  // Xử lý logout
-  const handleLogout = () => {
-    onLogout();
-    handleMenuClose();
   };
 
   return (
@@ -140,48 +147,67 @@ const Header: React.FC<HeaderProps> = ({ isAuthenticated, user, onLogin, onLogou
         <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
           {isAuthenticated ? (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography variant="body1" sx={{ mr: 2, fontWeight: 500 }}>
-                Xin chào, {user?.fullName || user?.username}
-              </Typography>
-              <IconButton
-                size="large"
-                edge="end"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenuOpen}
+              {/* User Avatar */}
+              <Avatar
+                src={user?.avatar}
+                alt={user?.fullName || user?.username}
+                sx={{ 
+                  width: 32, 
+                  height: 32, 
+                  mr: 1,
+                  bgcolor: 'secondary.main'
+                }}
+              >
+                {(user?.fullName || user?.username)?.charAt(0)}
+              </Avatar>
+              
+              {/* User Menu Button */}
+              <Button
                 color="inherit"
+                onClick={handleUserMenuClick}
+                endIcon={<ArrowDropDown />}
+                sx={{
+                  textTransform: 'none',
+                  fontWeight: 500,
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  }
+                }}
               >
-                <Avatar 
-                  src={user?.avatar} 
-                  alt={user?.fullName}
-                  sx={{ width: 36, height: 36 }}
-                >
-                  {user?.fullName?.charAt(0) || <AccountCircle />}
-                </Avatar>
-              </IconButton>
+                {user?.fullName || user?.username}
+              </Button>
+
+              {/* User Dropdown Menu */}
               <Menu
-                id="menu-appbar"
                 anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
+                open={open}
+                onClose={handleUserMenuClose}
+                onClick={handleUserMenuClose}
+                PaperProps={{
+                  elevation: 3,
+                  sx: {
+                    mt: 1.5,
+                    minWidth: 180,
+                    '& .MuiMenuItem-root': {
+                      px: 2,
+                      py: 1,
+                    },
+                  },
                 }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
-                <MenuItem onClick={handleProfile}>
-                  <AccountCircle sx={{ mr: 1 }} />
-                  Hồ sơ cá nhân
+                <MenuItem onClick={handleProfileClick}>
+                  <ListItemIcon>
+                    <PersonIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Hồ sơ cá nhân</ListItemText>
                 </MenuItem>
                 <MenuItem onClick={handleLogout}>
-                  <ExitToApp sx={{ mr: 1 }} />
-                  Đăng xuất
+                  <ListItemIcon>
+                    <ExitToApp fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Đăng xuất</ListItemText>
                 </MenuItem>
               </Menu>
             </Box>

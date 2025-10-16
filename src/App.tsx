@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, Box } from '@mui/material';
+import { CssBaseline, Box, Snackbar, Alert } from '@mui/material';
 
 // Components
 import Header from './components/Header/Header';
@@ -14,6 +14,9 @@ import TheoryPage from './pages/Theory/TheoryPage';
 import ProductionPage from './pages/Production/ProductionPage';
 import ProfilePage from './pages/Profile/ProfilePage';
 import ChatPage from './pages/Chat/ChatPage';
+
+// Admin App
+import AdminApp from './AdminApp';
 
 // Services and Types
 import { authAPI, profileAPI } from './services/api';
@@ -75,9 +78,16 @@ const App: React.FC = () => {
     token: null
   });
 
+  // State quản lý chế độ admin
+  const [isAdminMode, setIsAdminMode] = useState(false);
+
   // State cho dialogs
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
+
+  // State cho success notifications
+  const [successMessage, setSuccessMessage] = useState('');
+  const [showSuccessSnackbar, setShowSuccessSnackbar] = useState(false);
 
   // Kiểm tra authentication khi load app
   useEffect(() => {
@@ -118,9 +128,21 @@ const App: React.FC = () => {
         token
       });
       
+      // Kiểm tra nếu là admin thì chuyển sang admin mode
+      if (user.role === 'ADMIN') {
+        setIsAdminMode(true);
+      }
+      
       setLoginDialogOpen(false);
-    } catch (error) {
-      throw new Error('Login failed');
+      
+      // Chỉ hiển thị thông báo thành công cho user thường, không hiển thị cho admin
+      if (user.role !== 'ADMIN') {
+        setSuccessMessage(`Chào mừng ${user.fullName || user.username}! Đăng nhập thành công.`);
+        setShowSuccessSnackbar(true);
+      }
+    } catch (error: any) {
+      // Ném lại error với message từ API service để LoginDialog hiển thị
+      throw error;
     }
   };
 
@@ -141,6 +163,9 @@ const App: React.FC = () => {
         user: null,
         token: null
       });
+      
+      // Reset admin mode
+      setIsAdminMode(false);
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -151,9 +176,13 @@ const App: React.FC = () => {
     try {
       await authAPI.register(registerData);
       setRegisterDialogOpen(false);
-      // Có thể hiển thị thông báo thành công ở đây
-    } catch (error) {
-      throw error; // Để RegisterDialog xử lý error
+      
+      // Hiển thị thông báo thành công
+      setSuccessMessage('Đăng ký tài khoản thành công! Bạn có thể đăng nhập ngay bây giờ.');
+      setShowSuccessSnackbar(true);
+    } catch (error: any) {
+      // Ném lại error với message từ API service để RegisterDialog hiển thị
+      throw error;
     }
   };
 
@@ -166,8 +195,9 @@ const App: React.FC = () => {
         ...prev,
         user: updatedUser
       }));
-    } catch (error) {
-      throw new Error('Profile update failed');
+    } catch (error: any) {
+      // Ném lại error với message từ API service
+      throw error;
     }
   };
 
@@ -208,6 +238,28 @@ const App: React.FC = () => {
     setRegisterDialogOpen(true);
   };
 
+  // Xử lý chuyển sang chế độ user
+  const handleSwitchToUser = () => {
+    setIsAdminMode(false);
+  };
+
+  // Xử lý đóng success snackbar
+  const handleCloseSuccessSnackbar = () => {
+    setShowSuccessSnackbar(false);
+  };
+
+  // Nếu là admin và đang ở admin mode, hiển thị AdminApp
+  if (isAdminMode && authState.isAuthenticated && authState.user?.role === 'ADMIN') {
+    return (
+      <AdminApp 
+        authState={authState}
+        onLogout={handleLogout}
+        onSwitchToUser={handleSwitchToUser}
+      />
+    );
+  }
+
+  // Hiển thị app thường cho user
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -247,6 +299,8 @@ const App: React.FC = () => {
                   />
                 } 
               />
+              {/* Redirect admin routes to user interface */}
+              <Route path="/admin" element={<HomePage />} />
             </Routes>
           </Box>
 
@@ -264,6 +318,22 @@ const App: React.FC = () => {
             onClose={handleCloseRegister}
             onRegister={handleRegister}
           />
+
+          {/* Success Notification Snackbar */}
+          <Snackbar
+            open={showSuccessSnackbar}
+            autoHideDuration={4000}
+            onClose={handleCloseSuccessSnackbar}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          >
+            <Alert 
+              onClose={handleCloseSuccessSnackbar} 
+              severity="success" 
+              sx={{ width: '100%' }}
+            >
+              {successMessage}
+            </Alert>
+          </Snackbar>
         </Box>
       </Router>
     </ThemeProvider>

@@ -99,7 +99,16 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose, onLogin, onOpe
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {error && (
-              <Alert severity="error">
+              <Alert 
+                severity="error" 
+                sx={{ 
+                  mb: 1,
+                  '& .MuiAlert-message': {
+                    fontSize: '0.875rem',
+                    lineHeight: 1.4
+                  }
+                }}
+              >
                 {error}
               </Alert>
             )}

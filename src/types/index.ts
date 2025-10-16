@@ -84,3 +84,31 @@ export interface TheoryContent {
   category: 'commodity' | 'production' | 'value';
   createdAt: string;
 }
+
+// Admin types
+export interface OnlineUserResponse {
+  totalOnlineUsers: number;
+  lastUpdated: string;
+  onlineUsers?: OnlineUserDetail[];
+}
+
+export interface OnlineUserDetail {
+  accountId: string;
+  username: string;
+  role: string;
+  loginTime: string;
+  lastActivity: string;
+  isActive: boolean; // Giữ nguyên isActive cho OnlineUserDetail vì đây là trạng thái hoạt động real-time
+}
+
+export interface ListAccountResponse {
+  id: string;
+  username: string;
+  email: string;
+  fullName: string;
+  role: string;
+  active: boolean; // Backend trả về field "active" chứ không phải "isActive"
+  avatarUrl?: string; // Thêm avatar URL
+  created: string; // Backend trả về "created" chứ không phải "createdAt"
+  updated?: string; // Thêm field updated
+}

@@ -127,7 +127,15 @@ const RegisterDialog: React.FC<RegisterDialogProps> = ({ open, onClose, onRegist
         handleClose();
       }, 2000);
     } catch (err: any) {
-      setError(err.message || 'Đăng ký thất bại. Vui lòng thử lại.');
+      // Hiển thị error message từ API hoặc fallback message
+      const errorMessage = err.message || 'Đăng ký thất bại. Vui lòng thử lại.';
+      setError(errorMessage);
+      
+      // Nếu là lỗi validation từ backend, có thể xử lý thêm
+      if (err.message?.includes('đã tồn tại') || err.message?.includes('already exists')) {
+        // Có thể highlight field tương ứng
+        console.log('Validation error detected:', err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -173,13 +181,31 @@ const RegisterDialog: React.FC<RegisterDialogProps> = ({ open, onClose, onRegist
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {error && (
-              <Alert severity="error">
+              <Alert 
+                severity="error"
+                sx={{ 
+                  mb: 1,
+                  '& .MuiAlert-message': {
+                    fontSize: '0.875rem',
+                    lineHeight: 1.4
+                  }
+                }}
+              >
                 {error}
               </Alert>
             )}
 
             {success && (
-              <Alert severity="success">
+              <Alert 
+                severity="success"
+                sx={{ 
+                  mb: 1,
+                  '& .MuiAlert-message': {
+                    fontSize: '0.875rem',
+                    lineHeight: 1.4
+                  }
+                }}
+              >
                 {success}
               </Alert>
             )}
