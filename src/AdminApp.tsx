@@ -13,22 +13,25 @@ import AdminPage from './pages/Admin/AdminPage';
 import { authAPI } from './services/api';
 import { AuthState } from './types';
 
-// Tạo theme riêng cho Admin
+// Tạo theme riêng cho Admin theo tone màu nội thất
 const adminTheme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2', // Màu xanh chủ đạo cho admin
-      light: '#63a4ff',
-      dark: '#004ba0',
+      main: '#D2784D',
+      light: '#D19F5D',
+      dark: '#555555',
     },
     secondary: {
-      main: '#ff9800', // Màu cam phụ
-      light: '#ffc947',
-      dark: '#c66900',
+      main: '#6C91B7',
+      light: '#93AECA',
+      dark: '#456C92',
     },
     background: {
-      default: '#f8f9fa',
+      default: '#EAE2DF',
     },
+    text: {
+      primary: '#555555',
+    }
   },
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
@@ -108,7 +111,7 @@ const AdminApp: React.FC<AdminAppProps> = ({ authState, onLogout, onSwitchToUser
           />
 
           {/* Main Admin Content */}
-          <Box component="main" sx={{ flexGrow: 1, backgroundColor: 'background.default' }}>
+          <Box component="main" sx={{ flexGrow: 1, background: 'linear-gradient(135deg, #EAE2DF 0%, #CFB79D 35%, #D19F5D 65%, #D2784D 100%)' }}>
             <Routes>
               {/* Default route to admin dashboard */}
               <Route path="/" element={<Navigate to="/admin" replace />} />
