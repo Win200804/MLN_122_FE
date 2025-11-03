@@ -127,6 +127,41 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, isAuthenticated }) => {
     });
   };
 
+  // Chuyển đổi Markdown đơn giản (đậm, danh sách, đoạn)
+  const markdownToHtml = (text: string) => {
+    if (!text) return '';
+
+    // Đậm **text**
+    let html = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+    // Tách theo 2 xuống dòng thành các khối
+    const blocks = html.split(/\n\n+/);
+    const rendered = blocks
+      .map((block) => {
+        const lines = block.split(/\n/);
+        const isList = lines.every((l) => l.trim().startsWith('*'));
+        if (isList) {
+          const items = lines
+            .map((l) => l.replace(/^\*\s+/, '').trim())
+            .filter((l) => l.length > 0)
+            .map((l) => `<li>${l}</li>`) 
+            .join('');
+          return `<ul>${items}</ul>`;
+        }
+
+        // Heading khi block bắt đầu bằng <strong>...:</strong>
+        const headingMatch = block.match(/^<strong>(.+?)<\/strong>\s*:?$/);
+        if (headingMatch) {
+          return `<h4>${headingMatch[1]}</h4>`;
+        }
+
+        return `<p>${block}</p>`;
+      })
+      .join('');
+
+    return rendered;
+  };
+
   if (!isAuthenticated) {
     return (
       <Container maxWidth="md" sx={{ py: 4 }}>
@@ -221,9 +256,20 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, isAuthenticated }) => {
                     color: message.sender === 'user' ? 'white' : 'text.primary'
                   }}
                 >
-                  <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-                    {typeof message.content === 'string' ? message.content : JSON.stringify(message.content)}
-                  </Typography>
+                  {typeof message.content === 'string' ? (
+                    <Box
+                      sx={{
+                        '& h4': { fontWeight: 700, margin: '0 0 8px', color: 'primary.main' },
+                        '& ul': { margin: '8px 0 8px 20px' },
+                        '& p': { margin: '8px 0' }
+                      }}
+                      dangerouslySetInnerHTML={{ __html: markdownToHtml(message.content) }}
+                    />
+                  ) : (
+                    <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                      {JSON.stringify(message.content)}
+                    </Typography>
+                  )}
                   <Typography 
                     variant="caption" 
                     sx={{ 
