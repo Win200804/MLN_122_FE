@@ -65,7 +65,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onLogout }) => {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: '#1976d2' }}>
+    <AppBar position="static" sx={{ background: 'linear-gradient(135deg, #D2784D 0%, #D19F5D 50%, #CFB79D 100%)' }}>
       <Toolbar sx={{ display: 'flex', alignItems: 'center', minHeight: '64px' }}>
         {/* Logo và tiêu đề admin */}
         <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', gap: 2 }}>

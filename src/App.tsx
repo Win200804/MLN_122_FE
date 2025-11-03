@@ -22,22 +22,25 @@ import AdminApp from './AdminApp';
 import { authAPI, profileAPI } from './services/api';
 import { AuthState, RegisterRequest, UserInformationRequest } from './types';
 
-// Tạo theme Material-UI
+// Tạo theme Material-UI theo tone màu nội thất
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#d32f2f', // Màu đỏ chủ đạo
-      light: '#ff6659',
-      dark: '#9a0007',
+      main: '#D2784D', // cam đất
+      light: '#D19F5D',
+      dark: '#555555',
     },
     secondary: {
-      main: '#1976d2', // Màu xanh phụ
-      light: '#63a4ff',
-      dark: '#004ba0',
+      main: '#6C91B7', // xanh lam nhạt
+      light: '#93AECA',
+      dark: '#456C92',
     },
     background: {
-      default: '#f5f5f5',
+      default: '#EAE2DF',
     },
+    text: {
+      primary: '#555555',
+    }
   },
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
@@ -275,7 +278,7 @@ const App: React.FC = () => {
           />
 
           {/* Main Content */}
-          <Box component="main" sx={{ flexGrow: 1 }}>
+        <Box component="main" sx={{ flexGrow: 1, background: 'linear-gradient(135deg, #EAE2DF 0%, #CFB79D 35%, #D19F5D 65%, #D2784D 100%)' }}>
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/theory" element={<TheoryPage />} />

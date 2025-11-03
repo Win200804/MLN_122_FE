@@ -82,7 +82,7 @@ const Header: React.FC<HeaderProps> = ({ isAuthenticated, user, onLogin, onLogou
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: '#d32f2f' }}>
+    <AppBar position="static" sx={{ background: 'linear-gradient(135deg, #D2784D 0%, #D19F5D 50%, #CFB79D 100%)' }}>
       <Toolbar sx={{ display: 'flex', alignItems: 'center', minHeight: '64px' }}>
         {/* Logo và tiêu đề - Flex 1 */}
         <Box sx={{ flex: 1, display: 'flex', alignItems: 'center' }}>

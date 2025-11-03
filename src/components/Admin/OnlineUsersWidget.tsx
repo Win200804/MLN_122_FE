@@ -239,10 +239,7 @@ const OnlineUsersWidget: React.FC<OnlineUsersWidgetProps> = ({ className }) => {
     }
   };
 
-  // Get status color - isActive = true nghĩa là user đang hoạt động real-time
-  const getStatusColor = (isActive: boolean) => {
-    return isActive ? 'success' : 'warning';
-  };
+  // Chip trạng thái: luôn hiển thị Online và dùng màu xanh dương (secondary)
 
   if (loading && !onlineData) {
     return (
@@ -464,8 +461,8 @@ const OnlineUsersWidget: React.FC<OnlineUsersWidgetProps> = ({ className }) => {
                           <TableCell>
                             <Chip
                               icon={<CircleIcon />}
-                              label={user.isActive ? 'Hoạt động' : 'Đang rảnh'}
-                              color={getStatusColor(user.isActive)}
+                              label={'Online'}
+                              color="secondary"
                               size="small"
                             />
                           </TableCell>
