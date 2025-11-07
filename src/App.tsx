@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, Box, Snackbar, Alert } from '@mui/material';
+import { CssBaseline, Box, Snackbar, Alert, Button } from '@mui/material';
 
 // Components
 import Header from './components/Header/Header';
@@ -12,6 +12,7 @@ import RegisterDialog from './components/Auth/RegisterDialog';
 import HomePage from './pages/Home/HomePage';
 import TheoryPage from './pages/Theory/TheoryPage';
 import ProductionPage from './pages/Production/ProductionPage';
+import QuizPage from './pages/Quiz/QuizPage';
 import ProfilePage from './pages/Profile/ProfilePage';
 import ChatPage from './pages/Chat/ChatPage';
 
@@ -22,24 +23,26 @@ import AdminApp from './AdminApp';
 import { authAPI, profileAPI } from './services/api';
 import { AuthState, RegisterRequest, UserInformationRequest } from './types';
 
-// Tạo theme Material-UI theo tone màu nội thất
+// Theme Material-UI tone pastel phù hợp chủ đề hàng hóa (teal/mint/peach)
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#D2784D', // cam đất
-      light: '#D19F5D',
-      dark: '#555555',
+      main: '#6EC6C5', // teal pastel
+      light: '#A8E0DF',
+      dark: '#4B9F9E',
     },
     secondary: {
-      main: '#6C91B7', // xanh lam nhạt
-      light: '#93AECA',
-      dark: '#456C92',
+      main: '#F7B267', // peach pastel
+      light: '#FAD1A1',
+      dark: '#E08C39',
     },
     background: {
-      default: '#EAE2DF',
+      default: '#F6FFF8', // mint pastel
+      paper: '#FFFFFF',
     },
     text: {
-      primary: '#555555',
+      primary: '#334E4D',
+      secondary: '#5C7A79',
     }
   },
   typography: {
@@ -74,6 +77,18 @@ const theme = createTheme({
 });
 
 const App: React.FC = () => {
+  // Guard yêu cầu đăng nhập
+  const RequireAuth: React.FC<{ children: JSX.Element }> = ({ children }) => {
+    if (authState.isAuthenticated) return children;
+    return (
+      <Box sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+        <Alert severity="warning" sx={{ width: '100%', maxWidth: 720 }}>
+          Bạn cần đăng nhập để làm Quiz.
+        </Alert>
+        <Button variant="contained" color="primary" onClick={handleOpenLogin}>Đăng nhập</Button>
+      </Box>
+    );
+  };
   // State quản lý authentication
   const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: false,
@@ -278,11 +293,12 @@ const App: React.FC = () => {
           />
 
           {/* Main Content */}
-        <Box component="main" sx={{ flexGrow: 1, background: 'linear-gradient(135deg, #EAE2DF 0%, #CFB79D 35%, #D19F5D 65%, #D2784D 100%)' }}>
+        <Box component="main" sx={{ flexGrow: 1, background: 'linear-gradient(135deg, #F6FFF8 0%, #E7FFF3 35%, #A8E0DF 65%, #6EC6C5 100%)' }}>
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/theory" element={<TheoryPage />} />
               <Route path="/production" element={<ProductionPage />} />
+              <Route path="/quiz" element={<RequireAuth><QuizPage /></RequireAuth>} />
               <Route 
                 path="/profile" 
                 element={

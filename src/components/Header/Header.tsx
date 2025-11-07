@@ -19,6 +19,7 @@ import {
   Home,
   Book,
   Factory,
+  Quiz as QuizIcon,
   PersonAdd,
   AccountCircle,
   Person as PersonIcon,
@@ -47,7 +48,8 @@ const Header: React.FC<HeaderProps> = ({ isAuthenticated, user, onLogin, onLogou
     if (path === '/') return 0;
     if (path === '/theory') return 1;
     if (path === '/production') return 2;
-    if (path === '/chat') return 3;
+    if (path === '/quiz') return 3;
+    if (path === '/chat') return 4;
     // Nếu đang ở trang profile hoặc trang khác, không highlight tab nào
     if (path === '/profile') return false;
     return 0; // Default về trang chủ
@@ -55,7 +57,7 @@ const Header: React.FC<HeaderProps> = ({ isAuthenticated, user, onLogin, onLogou
 
   // Xử lý thay đổi tab
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    const routes = ['/', '/theory', '/production', '/chat'];
+    const routes = ['/', '/theory', '/production', '/quiz', '/chat'];
     navigate(routes[newValue]);
   };
 
@@ -82,7 +84,7 @@ const Header: React.FC<HeaderProps> = ({ isAuthenticated, user, onLogin, onLogou
   };
 
   return (
-    <AppBar position="static" sx={{ background: 'linear-gradient(135deg, #D2784D 0%, #D19F5D 50%, #CFB79D 100%)' }}>
+    <AppBar position="static" sx={{ background: 'linear-gradient(135deg, #6EC6C5 0%, #A8E0DF 50%, #F7B267 100%)' }}>
       <Toolbar sx={{ display: 'flex', alignItems: 'center', minHeight: '64px' }}>
         {/* Logo và tiêu đề - Flex 1 */}
         <Box sx={{ flex: 1, display: 'flex', alignItems: 'center' }}>
@@ -133,6 +135,11 @@ const Header: React.FC<HeaderProps> = ({ isAuthenticated, user, onLogin, onLogou
             <Tab 
               icon={<Factory />} 
               label="SẢN XUẤT" 
+              iconPosition="start"
+            />
+            <Tab 
+              icon={<QuizIcon />} 
+              label="QUIZ" 
               iconPosition="start"
             />
             <Tab 
